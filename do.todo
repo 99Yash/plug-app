@@ -1,0 +1,12 @@
+add routing
+implement google authentication
+implement Anonymous sign in authentication
+add functionality to the set status button by allowing it to fetch data from the api.
+find a way to set upvotes and downvotes for a user.
+create a fav list of users that can be set by a user.(opt)
+sort profiles according to the number of upvotes.
+
+
+
+done==> sign in anon:: api call to random user-> set status in a new page 
+upon clicking set submit status, post the user info in FBase
