@@ -3,16 +3,19 @@ import "./index.css";
 import { Button } from "antd";
 import { GoogleOutlined } from "@ant-design/icons";
 import Profile from "./Profile";
-import { signInWithGoogle } from "./Firebase";
+import { db, signInWithGoogle } from "./Firebase";
+import { ref } from "firebase/database";
 
 function App() {
   const [userData, setUserData] = useState([]);
   const [loggedIn, setLoggedIn] = useState(false);
 
+  // TODO logic for setting status
   const getRequestHandler = async () => {
     setLoggedIn(true);
     const response = await fetch("https://randomuser.me/api/");
     const data = await response.json();
+    console.log(data);
 
     const transformedUserData = data.results.map((data) => {
       return {
@@ -22,18 +25,49 @@ function App() {
       };
     });
     setUserData(transformedUserData);
-    console.log(transformedUserData);
   };
   console.log(userData);
+
+  const handleSignInWithGoogle = () => {
+    signInWithGoogle();
+    setLoggedIn(true);
+  };
+
+  // const signInWithGoogle = async() => {
+  //   try{
+
+  //    const signIn= await signInWithPopup(auth, provider)
+  //    const userRef=ref(db,'users/'+user.id)
+  //     // .then((result) => {
+  //     //   const name = result.user.displayName;
+  //     //   const pic = result.user.photoURL;
+
+  //       //redirect to profile page
+  //     })
+  //   }
+  //     .catch((err) => console.log(err));
+  // };
+
+  const submitStatusHandler = (user) => {
+    fetch(
+      "https://react-http-fc3fd-default-rtdb.asia-southeast1.firebasedatabase.app/Plug-users.json",
+      {
+        method: "PUT",
+        body: JSON.stringify(user),
+        headers: {
+          "Content-type": "application/json",
+        },
+      }
+    );
+  };
 
   return (
     <Fragment>
       {!loggedIn && (
         <div className="App">
-          <Button onClick={signInWithGoogle} type="primary" shape="round">
+          <Button onClick={handleSignInWithGoogle} type="primary" shape="round">
             <GoogleOutlined />
             Sign in with Google &nbsp;
-            {/*  //! after this, set status */}
           </Button>
           <Button
             type="primary"
@@ -46,7 +80,11 @@ function App() {
           </Button>
         </div>
       )}
-      <section>{userData.length && <Profile userData={userData} />}</section>
+      <section>
+        {userData.length && (
+          <Profile onSubmitStatus={submitStatusHandler} userData={userData} />
+        )}
+      </section>
     </Fragment>
   );
 }
